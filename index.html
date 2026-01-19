@@ -1,30 +1,27 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <title>AyurSutra</title>
-    <meta name="description" content="AyurSutra – Panchakarma management and scheduling." />
+    <title>AyurSutra - Patient Management</title>
+    <link rel="icon" href="/icon.svg" />
+    
+    <!-- PWA Meta Tags -->
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#ffffff" />
-    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="description" content="Patient Management and Therapy Application" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="theme-color" content="#ffffff" />
+    
+    <!-- iOS specific -->
+    <meta name="apple-mobile-web-app-status-bar" content="#ffffff" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/service-worker.js')
-            .then(registration => console.log('ServiceWorker registration successful'))
-            .catch(err => console.log('ServiceWorker registration failed: ', err));
-        });
-      }
-    </script>
   </body>
 </html>

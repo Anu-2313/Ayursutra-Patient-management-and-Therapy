@@ -1,6 +1,7 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { registerSW } from 'virtual:pwa-register'
 import './index.css'
 import App from './App'
 import Home from './pages/Home'
@@ -28,3 +29,8 @@ createRoot(document.getElementById('root')!).render(
     <RouterProvider router={router} />
   </React.StrictMode>
 )
+
+registerSW({ immediate: true })
+
+// Register service worker
+// register()

@@ -10,6 +10,12 @@
 /build
 /dist
 
+# Local preview/build artifacts
+/dev-dist
+
+# TypeScript build info
+*.tsbuildinfo
+
 # Misc
 .DS_Store
 .env.local

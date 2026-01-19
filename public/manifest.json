@@ -1,21 +1,19 @@
 {
-  "name": "AyurSutra",
-  "short_name": "AyurSutra",
-  "description": "Panchakarma management and scheduling app",
+  "name": "Ayursutra",
+  "short_name": "Ayursutra",
+  "description": "Patient Management and Therapy Application",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "theme_color": "#ffffff",
+  "orientation": "portrait",
+  "categories": ["health", "lifestyle", "medical"],
   "icons": [
     {
-      "src": "/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }

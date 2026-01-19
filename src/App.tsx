@@ -1,5 +1,6 @@
 import React from 'react'
 import { Outlet, Link } from 'react-router-dom'
+import PWAInstallPrompt from './components/PWAInstallPrompt'
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
           </div>
         </div>
       </footer>
+      <PWAInstallPrompt />
     </div>
   )
 }
