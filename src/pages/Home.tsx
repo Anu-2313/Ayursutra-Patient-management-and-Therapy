@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 export default function Home() {
   return (
@@ -21,7 +22,7 @@ export default function Home() {
               <div className="mt-8 flex flex-wrap sm:flex-nowrap items-center gap-3 gap-y-3">
                 <a href="#benefits" className="btn-primary w-full sm:w-auto justify-center">See Benefits</a>
                 <a href="#features" className="inline-flex items-center rounded-md bg-white/10 ring-1 ring-white/20 px-5 py-2.5 text-white font-medium hover:bg-white/20 w-full sm:w-auto justify-center text-center">Explore Features</a>
-                <a href="/login" className="inline-flex items-center rounded-md bg-white px-5 py-2.5 text-brand-700 font-medium hover:bg-brand-50 shadow-sm w-full sm:w-auto justify-center text-center">Login →</a>
+                <Link to="/login" className="inline-flex items-center rounded-md bg-white px-5 py-2.5 text-brand-700 font-medium hover:bg-brand-50 shadow-sm w-full sm:w-auto justify-center text-center">Login →</Link>
               </div>
             </div>
           </div>
@@ -94,21 +95,21 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-gray-900">Automated Therapy & Records</h3>
               <p className="mt-2 text-sm text-gray-600">Centralized digital health records with therapy scheduling.</p>
               <div className="mt-4">
-                <a href="/schedule" className="btn-primary">Try scheduling demo</a>
+                <Link to="/schedule" className="btn-primary">Try scheduling demo</Link>
               </div>
             </div>
             <div className="rounded-xl border border-gray-100 p-6 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900">AI Diet Planner</h3>
               <p className="mt-2 text-sm text-gray-600">Personalized meal suggestions aligned to dosha and nutrition.</p>
               <div className="mt-4">
-                <a href="/diet" className="btn-primary">Try diet demo</a>
+                <Link to="/diet" className="btn-primary">Try diet demo</Link>
               </div>
             </div>
             <div className="rounded-xl border border-gray-100 p-6 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900">Operational Efficiency</h3>
               <p className="mt-2 text-sm text-gray-600">Intelligent scheduling, reminders, and insights to enhance care.</p>
               <div className="mt-4">
-                <a href="/records" className="btn-primary">View records demo</a>
+                <Link to="/records" className="btn-primary">View records demo</Link>
               </div>
             </div>
           </div>
@@ -121,7 +122,7 @@ export default function Home() {
             <h2 className="text-2xl font-semibold">See AyurSutra in action</h2>
             <p className="mt-1 text-brand-100">Request a walkthrough tailored to your center.</p>
           </div>
-          <a href="/login" className="inline-flex items-center rounded-md bg-white px-5 py-3 text-brand-700 font-medium hover:bg-brand-50 shadow-sm w-full md:w-auto justify-center">Login</a>
+          <Link to="/login" className="inline-flex items-center rounded-md bg-white px-5 py-3 text-brand-700 font-medium hover:bg-brand-50 shadow-sm w-full md:w-auto justify-center">Login</Link>
         </div>
       </section>
     </div>
