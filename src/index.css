@@ -1,15 +1,80 @@
 @import "tailwindcss";
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap');
+
 :root { color-scheme: light; }
 html, body, #root { height: 100%; }
 body {
-  background-color: #ffffff;
-  color: #1f2937; /* gray-800 */
+  background-color: #fafaf8;
+  color: #1a1a1a;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-.container-wide { max-width: 80rem; margin-left: auto; margin-right: auto; padding-left: 1rem; padding-right: 1rem; }
-.link { color: #0d5f3c; }
-.link:hover { color: #083221; }
-.btn-primary { display: inline-flex; align-items: center; border-radius: 0.375rem; background-color: #0f7b4d; padding: 0.625rem 1.25rem; color: #ffffff; }
-.btn-primary:hover { background-color: #0d5f3c; }
+
+.font-serif { font-family: 'Playfair Display', serif; }
+.container-wide { max-width: 80rem; margin-left: auto; margin-right: auto; padding-left: 1.5rem; padding-right: 1.5rem; }
+.link { color: #7c5c2e; }
+.link:hover { color: #5a3e1b; }
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, #8b5e2a 0%, #c4862e 100%);
+  padding: 0.65rem 1.4rem;
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 8px rgba(139,94,42,0.25);
+  transition: all 0.2s ease;
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, #7a5225 0%, #b3771f 100%);
+  box-shadow: 0 4px 14px rgba(139,94,42,0.35);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 0.5rem;
+  border: 1.5px solid rgba(255,255,255,0.4);
+  padding: 0.65rem 1.4rem;
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 0.9rem;
+  backdrop-filter: blur(4px);
+  background: rgba(255,255,255,0.08);
+  transition: all 0.2s ease;
+}
+.btn-outline:hover {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.6);
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #f0ebe3;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.09);
+  transform: translateY(-2px);
+}
+
+.stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(196,134,46,0.1);
+  color: #8b5e2a;
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}

@@ -1,131 +1,217 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+const features = [
+  {
+    icon: '🗓️',
+    title: 'Automated Scheduling',
+    desc: 'Streamline therapy bookings while preserving Ayurvedic protocols and practitioner preferences.',
+  },
+  {
+    icon: '📋',
+    title: 'Patient Tracking',
+    desc: 'Maintain detailed patient histories, dosha profiles, and treatment progress in one place.',
+  },
+  {
+    icon: '📚',
+    title: 'Protocols Library',
+    desc: 'Access a curated library of traditional Panchakarma protocols for consistent care delivery.',
+  },
+]
+
+const services = [
+  {
+    icon: '⚕️',
+    title: 'Automated Therapy & Records',
+    desc: 'Centralized digital health records with AI-powered therapy scheduling.',
+    link: '/schedule',
+    cta: 'Try Scheduling Demo',
+    color: 'from-amber-50 to-orange-50',
+    border: 'border-amber-100',
+  },
+  {
+    icon: '🥗',
+    title: 'AI Diet Planner',
+    desc: 'Personalized meal suggestions aligned to dosha type and nutritional needs.',
+    link: '/diet',
+    cta: 'Try Diet Demo',
+    color: 'from-green-50 to-emerald-50',
+    border: 'border-green-100',
+  },
+  {
+    icon: '📊',
+    title: 'Operational Efficiency',
+    desc: 'Intelligent scheduling, automated reminders, and actionable insights to enhance care.',
+    link: '/records',
+    cta: 'View Records Demo',
+    color: 'from-blue-50 to-indigo-50',
+    border: 'border-blue-100',
+  },
+]
+
+const stakeholders = [
+  {
+    role: 'For Practitioners',
+    stat: '40% less admin work',
+    points: [
+      'Streamlined daily schedule management',
+      'Integrated patient consultation tools',
+      'Access to traditional protocol library',
+      'Performance analytics and insights',
+    ],
+  },
+  {
+    role: 'For Patients',
+    stat: '50% better compliance',
+    points: [
+      'Easy appointment booking and modification',
+      'Personalized health tips and guidance',
+      'Real-time therapy progress tracking',
+      'Automated care reminders and notifications',
+    ],
+  },
+  {
+    role: 'For Administrators',
+    stat: '60% fewer admin tasks',
+    points: [
+      'Comprehensive center performance metrics',
+      'Staff scheduling and resource optimization',
+      'Revenue tracking and billing integration',
+      'Regulatory compliance reporting',
+    ],
+  },
+]
+
 export default function Home() {
   return (
-    <div>
-      <section className="relative overflow-hidden min-h-[70vh] isolate">
+    <div className="overflow-x-hidden">
+
+      {/* Hero */}
+      <section className="relative min-h-[88vh] flex items-center isolate overflow-hidden">
         <div
-          className="absolute inset-0 bg-center bg-cover z-0 pointer-events-none"
+          className="absolute inset-0 bg-center bg-cover z-0"
           style={{
             backgroundImage:
               "url('https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2000&auto=format&fit=crop')",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/70 z-0 pointer-events-none" />
-        <div className="relative z-10">
-          <div className="container-wide pt-24 pb-20">
-            <div className="max-w-3xl text-white">
-              <span className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white">AyurSutra</span>
-              <h1 className="mt-4 text-4xl sm:text-5xl font-extrabold tracking-tight">Panchakarma Patient Management & Therapy Scheduling</h1>
-              <p className="mt-4 text-lg text-white/80">Automate scheduling, track patient progress, and preserve Ayurvedic authenticity with a comprehensive, professional system.</p>
-              <div className="mt-8 flex flex-wrap sm:flex-nowrap items-center gap-3 gap-y-3">
-                <a href="#benefits" className="btn-primary w-full sm:w-auto justify-center">See Benefits</a>
-                <a href="#features" className="inline-flex items-center rounded-md bg-white/10 ring-1 ring-white/20 px-5 py-2.5 text-white font-medium hover:bg-white/20 w-full sm:w-auto justify-center text-center">Explore Features</a>
-                <Link to="/login" className="inline-flex items-center rounded-md bg-white px-5 py-2.5 text-brand-700 font-medium hover:bg-brand-50 shadow-sm w-full sm:w-auto justify-center text-center">Login →</Link>
-              </div>
+        <div className="absolute inset-0 bg-gradient-to-br from-black/75 via-black/55 to-amber-950/60 z-0" />
+
+        {/* Decorative orb */}
+        <div className="absolute top-1/3 right-1/4 w-96 h-96 rounded-full bg-amber-500/10 blur-3xl z-0 pointer-events-none" />
+
+        <div className="relative z-10 container-wide py-24">
+          <div className="max-w-2xl">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-1.5 text-xs font-semibold text-amber-200 tracking-widest uppercase mb-6">
+              ✦ Ayurvedic Intelligence
+            </span>
+            <h1 className="font-serif text-5xl sm:text-6xl font-bold text-white leading-tight tracking-tight">
+              Panchakarma <br />
+              <span className="text-amber-300">Patient Management</span><br />
+              & Therapy Scheduling
+            </h1>
+            <p className="mt-6 text-lg text-white/75 leading-relaxed max-w-xl">
+              Automate scheduling, track patient progress, and preserve Ayurvedic authenticity with a comprehensive, professional system.
+            </p>
+            <div className="mt-10 flex flex-wrap gap-3">
+              <a href="#benefits" className="btn-primary">See Benefits</a>
+              <a href="#features" className="btn-outline">Explore Features</a>
+              <Link to="/login" className="inline-flex items-center rounded-lg bg-white px-5 py-2.5 text-amber-800 font-semibold hover:bg-amber-50 shadow-md transition-all hover:-translate-y-0.5 text-sm">
+                Login →
+              </Link>
             </div>
           </div>
         </div>
+
+        {/* Bottom fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#fafaf8] to-transparent z-10 pointer-events-none" />
       </section>
 
-      <section id="features" className="py-16 relative z-10">
+      {/* Features */}
+      <section id="features" className="py-20">
         <div className="container-wide">
-          <h2 className="text-2xl font-semibold text-gray-900">Key Features</h2>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {["Automated Scheduling","Patient Tracking","Protocols Library"].map((t) => (
-              <div key={t} className="rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow">
-                <h3 className="text-lg font-semibold text-gray-900">{t}</h3>
-                <p className="mt-2 text-sm text-gray-600">Streamline operations while preserving Ayurvedic protocols.</p>
+          <div className="text-center max-w-xl mx-auto mb-12">
+            <span className="stat-badge mb-3">Core Features</span>
+            <h2 className="font-serif text-3xl font-bold text-gray-900 mt-2">Everything you need to run a modern Ayurvedic center</h2>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {features.map((f) => (
+              <div key={f.title} className="card p-7">
+                <div className="text-3xl mb-4">{f.icon}</div>
+                <h3 className="text-lg font-semibold text-gray-900">{f.title}</h3>
+                <p className="mt-2 text-sm text-gray-500 leading-relaxed">{f.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="benefits" className="py-20 bg-gradient-to-b from-white to-brand-50/40 relative z-10">
+      {/* Benefits */}
+      <section id="benefits" className="py-20 bg-gradient-to-b from-[#fafaf8] to-amber-50/40">
         <div className="container-wide">
-          <div className="max-w-3xl">
-            <h2 className="text-3xl font-extrabold tracking-tight text-gray-900">Designed to benefit every stakeholder in the Panchakarma ecosystem</h2>
-            <p className="mt-2 text-gray-600">From practitioners to patients to administrators.</p>
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <span className="stat-badge mb-3">Who Benefits</span>
+            <h2 className="font-serif text-3xl font-bold text-gray-900 mt-2">Designed for every stakeholder in the Panchakarma ecosystem</h2>
+            <p className="mt-3 text-gray-500">From practitioners to patients to administrators.</p>
           </div>
-
-          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="text-xl font-semibold text-brand-700">For Practitioners</h3>
-              <ul className="mt-4 space-y-2 text-sm text-gray-700">
-                <li className="flex gap-2"><span className="text-brand-600">•</span> Streamlined daily schedule management</li>
-                <li className="flex gap-2"><span className="text-brand-600">•</span> Integrated patient consultation tools</li>
-                <li className="flex gap-2"><span className="text-brand-600">•</span> Access to traditional protocol library</li>
-                <li className="flex gap-2"><span className="text-brand-600">•</span> Performance analytics and insights</li>
-                <li className="flex gap-2 font-medium text-gray-900"><span className="text-brand-600">•</span> Reduced administrative workload by 40%</li>
-              </ul>
-            </div>
-
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="text-xl font-semibold text-brand-700">For Patients</h3>
-              <ul className="mt-4 space-y-2 text-sm text-gray-700">
-                <li className="flex gap-2"><span className="text-brand-600">•</span> Easy appointment booking and modification</li>
-                <li className="flex gap-2"><span className="text-brand-600">•</span> Personalized health tips and guidance</li>
-                <li className="flex gap-2"><span className="text-brand-600">•</span> Real-time therapy progress tracking</li>
-                <li className="flex gap-2"><span className="text-brand-600">•</span> Automated care reminders and notifications</li>
-                <li className="flex gap-2 font-medium text-gray-900"><span className="text-brand-600">•</span> 50% improvement in treatment compliance</li>
-              </ul>
-            </div>
-
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="text-xl font-semibold text-brand-700">For Administrators</h3>
-              <ul className="mt-4 space-y-2 text-sm text-gray-700">
-                <li className="flex gap-2"><span className="text-brand-600">•</span> Comprehensive center performance metrics</li>
-                <li className="flex gap-2"><span className="text-brand-600">•</span> Staff scheduling and resource optimization</li>
-                <li className="flex gap-2"><span className="text-brand-600">•</span> Revenue tracking and billing integration</li>
-                <li className="flex gap-2"><span className="text-brand-600">•</span> Regulatory compliance reporting</li>
-                <li className="flex gap-2 font-medium text-gray-900"><span className="text-brand-600">•</span> 60% reduction in administrative tasks</li>
-              </ul>
-            </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {stakeholders.map((s) => (
+              <div key={s.role} className="card p-7">
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-lg font-semibold text-gray-900">{s.role}</h3>
+                  <span className="stat-badge">{s.stat}</span>
+                </div>
+                <ul className="space-y-3">
+                  {s.points.map((p) => (
+                    <li key={p} className="flex items-start gap-2.5 text-sm text-gray-600">
+                      <span className="mt-0.5 text-amber-500 shrink-0">✓</span>
+                      {p}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section id="outcomes" className="py-16 bg-white relative z-10">
+      {/* Services */}
+      <section id="services" className="py-20 bg-white">
         <div className="container-wide">
-          <h2 className="text-2xl font-semibold text-gray-900">Our Services</h2>
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="rounded-xl border border-gray-100 p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900">Automated Therapy & Records</h3>
-              <p className="mt-2 text-sm text-gray-600">Centralized digital health records with therapy scheduling.</p>
-              <div className="mt-4">
-                <Link to="/schedule" className="btn-primary">Try scheduling demo</Link>
+          <div className="text-center max-w-xl mx-auto mb-12">
+            <span className="stat-badge mb-3">Our Services</span>
+            <h2 className="font-serif text-3xl font-bold text-gray-900 mt-2">Explore what AyurSutra can do</h2>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {services.map((s) => (
+              <div key={s.title} className={`card p-7 bg-gradient-to-br ${s.color} border ${s.border}`}>
+                <div className="text-3xl mb-4">{s.icon}</div>
+                <h3 className="text-lg font-semibold text-gray-900">{s.title}</h3>
+                <p className="mt-2 text-sm text-gray-500 leading-relaxed">{s.desc}</p>
+                <div className="mt-6">
+                  <Link to={s.link} className="btn-primary text-sm">{s.cta}</Link>
+                </div>
               </div>
-            </div>
-            <div className="rounded-xl border border-gray-100 p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900">AI Diet Planner</h3>
-              <p className="mt-2 text-sm text-gray-600">Personalized meal suggestions aligned to dosha and nutrition.</p>
-              <div className="mt-4">
-                <Link to="/diet" className="btn-primary">Try diet demo</Link>
-              </div>
-            </div>
-            <div className="rounded-xl border border-gray-100 p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900">Operational Efficiency</h3>
-              <p className="mt-2 text-sm text-gray-600">Intelligent scheduling, reminders, and insights to enhance care.</p>
-              <div className="mt-4">
-                <Link to="/records" className="btn-primary">View records demo</Link>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="relative z-20 py-16 bg-brand-600 text-white">
-        <div className="container-wide flex flex-col md:flex-row items-center md:items-center justify-between gap-6">
-          <div className="w-full md:w-auto">
-            <h2 className="text-2xl font-semibold">See AyurSutra in action</h2>
-            <p className="mt-1 text-brand-100">Request a walkthrough tailored to your center.</p>
+      {/* CTA */}
+      <section className="py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-800 via-amber-700 to-orange-700 z-0" />
+        <div className="absolute inset-0 opacity-10 z-0" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+        <div className="relative z-10 container-wide flex flex-col md:flex-row items-center justify-between gap-8">
+          <div>
+            <h2 className="font-serif text-3xl font-bold text-white">See AyurSutra in action</h2>
+            <p className="mt-2 text-amber-100/80">Request a walkthrough tailored to your center.</p>
           </div>
-          <Link to="/login" className="inline-flex items-center rounded-md bg-white px-5 py-3 text-brand-700 font-medium hover:bg-brand-50 shadow-sm w-full md:w-auto justify-center">Login</Link>
+          <Link to="/login" className="inline-flex items-center rounded-lg bg-white px-7 py-3.5 text-amber-800 font-semibold hover:bg-amber-50 shadow-lg transition-all hover:-translate-y-0.5 shrink-0">
+            Get Started →
+          </Link>
         </div>
       </section>
+
     </div>
   )
 }
-

@@ -5,12 +5,14 @@ import PWAInstallPrompt from './components/PWAInstallPrompt'
 export default function App() {
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-40 border-b border-gray-100 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+      <header className="sticky top-0 z-40 border-b border-amber-100/60 bg-white/85 backdrop-blur-md supports-[backdrop-filter]:bg-white/70 shadow-sm">
         <div className="container-wide h-16 flex items-center justify-between">
-          <Link to="/" className="text-lg font-semibold text-gray-900">AyurSutra</Link>
+          <Link to="/" className="font-serif text-xl font-bold text-amber-800 tracking-tight">AyurSutra</Link>
           <nav className="hidden md:flex items-center gap-6 text-sm text-gray-600">
-            <a href="#features" className="hover:text-gray-900">Features</a>
-            <Link to="/login" className="btn-primary">Login</Link>
+            <a href="#features" className="hover:text-amber-800 transition-colors font-medium">Features</a>
+            <a href="#benefits" className="hover:text-amber-800 transition-colors font-medium">Benefits</a>
+            <a href="#services" className="hover:text-amber-800 transition-colors font-medium">Services</a>
+            <Link to="/login" className="btn-primary text-sm">Login</Link>
           </nav>
         </div>
       </header>
