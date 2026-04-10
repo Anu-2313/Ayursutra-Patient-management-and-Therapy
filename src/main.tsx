@@ -9,6 +9,7 @@ import Login from './pages/Login'
 import ScheduleDemo from './pages/ScheduleDemo'
 import DietPlannerDemo from './pages/DietPlannerDemo'
 import RecordsDemo from './pages/RecordsDemo'
+import ModelAccuracyHeatmap from './pages/ModelAccuracyHeatmap'
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,7 @@ const router = createBrowserRouter([
       { path: 'schedule', element: <ScheduleDemo /> },
       { path: 'diet', element: <DietPlannerDemo /> },
       { path: 'records', element: <RecordsDemo /> },
+      { path: 'heatmap', element: <ModelAccuracyHeatmap /> },
     ],
   },
 ])

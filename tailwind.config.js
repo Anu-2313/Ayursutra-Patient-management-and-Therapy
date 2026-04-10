@@ -3,19 +3,39 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Forest green (repurposed from old 'brand')
+        forest: {
+          DEFAULT: '#166534',
+          50: '#f0fdf4',
+          100: '#dcfce7',
+          200: '#bbf7d0',
+          300: '#86efac',
+          400: '#4ade80',
+          500: '#22c55e',
+          600: '#166534',
+          700: '#15803d',
+          800: '#166534',
+          900: '#14532d'
+        },
+        // Keep brand alias for backward compat with demo pages
         brand: {
-          DEFAULT: '#0f7b4d',
-          50: '#eefaf3',
-          100: '#d6f3e3',
-          200: '#ace6c8',
-          300: '#7fd6ad',
-          400: '#4fbe8d',
-          500: '#2aa36f',
-          600: '#0f7b4d',
-          700: '#0d5f3c',
-          800: '#0b4b30',
-          900: '#083221'
-        }
+          DEFAULT: '#166534',
+          50: '#f0fdf4',
+          100: '#dcfce7',
+          200: '#bbf7d0',
+          300: '#86efac',
+          400: '#4ade80',
+          500: '#22c55e',
+          600: '#166534',
+          700: '#15803d',
+          800: '#166534',
+          900: '#14532d'
+        },
+        // Gold accent
+        gold: {
+          400: '#d4a843',
+          500: '#c49a2e',
+        },
       }
     }
   }
