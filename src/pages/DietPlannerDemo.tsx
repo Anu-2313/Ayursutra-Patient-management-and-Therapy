@@ -1,5 +1,9 @@
 import React from 'react'
-import { DoshaClassifier, DietRecommender, PatientFeatures, DoshaPrediction, DietRecommendation } from '../utils/mlModels'
+import {
+  DoshaClassifier, DietRecommender,
+  type PatientFeatures, type DoshaPrediction, type DietRecommendation,
+  type AgniState, type KoshtaType, type PrakritiType
+} from '../utils/mlModels'
 import FormField from '../components/FormField'
 
 function ConfidenceBar({ confidence, color = 'amber' }: { confidence: number; color?: string }) {
@@ -25,12 +29,39 @@ const doshaStyle: Record<string, { bg: string; text: string }> = {
   kapha: { bg: 'bg-green-50', text: 'text-green-700' },
 }
 
+const AGNI_OPTIONS = [
+  { value: 'Samagni', label: 'Samagni — Balanced' },
+  { value: 'Manda',   label: 'Manda — Slow/Weak' },
+  { value: 'Tikshna', label: 'Tikshna — Sharp/Intense' },
+  { value: 'Vishama', label: 'Vishama — Irregular' },
+]
+const KOSHTA_OPTIONS = [
+  { value: 'Madhya', label: 'Madhya — Moderate' },
+  { value: 'Krura',  label: 'Krura — Hard' },
+  { value: 'Mrudu',  label: 'Mrudu — Sensitive' },
+]
+const PRAKRITI_OPTIONS = [
+  { value: 'Vata', label: 'Vata' }, { value: 'Pitta', label: 'Pitta' },
+  { value: 'Kapha', label: 'Kapha' }, { value: 'Vata-Pitta', label: 'Vata-Pitta' },
+  { value: 'Pitta-Kapha', label: 'Pitta-Kapha' }, { value: 'Vata-Kapha', label: 'Vata-Kapha' },
+  { value: 'Tridosha', label: 'Tridosha' },
+]
+
+const agniGuidance: Record<AgniState, { note: string; color: string }> = {
+  Samagni:  { note: 'Balanced Agni — standard diet applies.', color: 'text-green-700 bg-green-50 border-green-200' },
+  Manda:    { note: 'Manda Agni — avoid heavy oils/ghee. Add Trikatu (ginger, pepper, pippali) to stimulate digestion.', color: 'text-red-700 bg-red-50 border-red-200' },
+  Tikshna:  { note: 'Tikshna Agni — avoid spicy/sour foods. Include cooling, sweet foods to pacify sharp Agni.', color: 'text-amber-700 bg-amber-50 border-amber-200' },
+  Vishama:  { note: 'Vishama Agni — eat at fixed times. Warm, grounding foods stabilize irregular Agni.', color: 'text-amber-700 bg-amber-50 border-amber-200' },
+}
+
 export default function DietPlannerDemo() {
   const [patientFeatures, setPatientFeatures] = React.useState<Partial<PatientFeatures>>({
     age: 30, gender: 'male', height: 170, weight: 70,
     sleepHours: 7, stressLevel: 5, digestion: 'good', appetite: 'moderate',
     bodyType: 'mesomorph', skinType: 'normal', hairType: 'normal',
-    energyLevel: 6, bowelMovement: 'regular', tongueCoating: 'none'
+    energyLevel: 6, bowelMovement: 'regular', tongueCoating: 'none',
+    prakriti: 'Vata', agni: 'Samagni', koshta: 'Madhya',
+    nadi: 'Vata-Nadi', sara: 'Madhyama', satva: 'Madhyama',
   })
   const [allergies, setAllergies] = React.useState('')
   const [goal, setGoal] = React.useState('Balance digestion')
@@ -38,12 +69,16 @@ export default function DietPlannerDemo() {
   const [doshaPrediction, setDoshaPrediction] = React.useState<DoshaPrediction | null>(null)
   const [showAdvanced, setShowAdvanced] = React.useState(false)
 
+  function pf<K extends keyof PatientFeatures>(key: K, value: PatientFeatures[K]) {
+    setPatientFeatures(prev => ({ ...prev, [key]: value }))
+  }
+
   function generatePlan() {
     const features = patientFeatures as PatientFeatures
     const doshaPred = DoshaClassifier.predict(features)
     setDoshaPrediction(doshaPred)
     const allergyList = allergies.toLowerCase().split(',').map(a => a.trim()).filter(Boolean)
-    setPlan(DietRecommender.recommend(doshaPred, allergyList, goal))
+    setPlan(DietRecommender.recommend(doshaPred, allergyList, goal, features.agni))
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -51,11 +86,14 @@ export default function DietPlannerDemo() {
     generatePlan()
   }
 
+  const agni = (patientFeatures.agni || 'Samagni') as AgniState
+  const agniGuide = agniGuidance[agni]
+
   return (
     <div className="min-h-[70vh] flex items-start bg-[#fafaf8]">
       <div className="container-wide py-10 grid gap-8 md:grid-cols-2">
 
-        {/* Form panel */}
+        {/* ── Form panel ── */}
         <div className="rounded-2xl border border-gray-100 border-t-4 border-t-amber-500 bg-white p-7 shadow-card">
           <div className="flex items-center justify-between mb-1">
             <h1 className="font-serif text-xl font-bold text-gray-900">ML-powered Diet Planner</h1>
@@ -67,45 +105,64 @@ export default function DietPlannerDemo() {
           <p className="text-xs text-gray-400 mb-6">Personalized meal suggestions · {Math.round(DietRecommender.getAccuracy() * 100)}% accuracy</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {!showAdvanced ? (
-              <FormField id="quickDosha" label="Primary dosha (quick mode)" type="select"
-                value={doshaPrediction?.primary || 'vata'}
-                onChange={() => {}}
-                options={[{ value: 'vata', label: 'Vata' }, { value: 'pitta', label: 'Pitta' }, { value: 'kapha', label: 'Kapha' }]} />
-            ) : (
+
+            {/* ── Ayurvedic Diagnostic Parameters ── */}
+            <div className="rounded-xl bg-amber-50 border border-amber-100 p-4 space-y-3">
+              <p className="text-xs font-semibold text-amber-800 uppercase tracking-wider">Ayurvedic Diagnostic Parameters</p>
+              <div className="grid grid-cols-3 gap-3">
+                <FormField id="prakriti" label="Prakriti" type="select"
+                  value={patientFeatures.prakriti || 'Vata'}
+                  onChange={v => pf('prakriti', v as PrakritiType)}
+                  options={PRAKRITI_OPTIONS} />
+                <FormField id="agni" label="Agni" type="select"
+                  value={patientFeatures.agni || 'Samagni'}
+                  onChange={v => pf('agni', v as AgniState)}
+                  options={AGNI_OPTIONS} />
+                <FormField id="koshta" label="Koshta" type="select"
+                  value={patientFeatures.koshta || 'Madhya'}
+                  onChange={v => pf('koshta', v as KoshtaType)}
+                  options={KOSHTA_OPTIONS} />
+              </div>
+              {/* Live Agni guidance */}
+              <div className={`rounded-lg border px-3 py-2 text-xs font-medium ${agniGuide.color}`}>
+                <span className="font-bold">Agni ({agni}): </span>{agniGuide.note}
+              </div>
+            </div>
+
+            {showAdvanced && (
               <>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField id="age" label="Age" type="number" value={patientFeatures.age ?? 30}
-                    onChange={v => setPatientFeatures({ ...patientFeatures, age: parseInt(v) })} />
+                    onChange={v => pf('age', parseInt(v))} />
                   <FormField id="gender" label="Gender" type="select" value={patientFeatures.gender ?? 'male'}
-                    onChange={v => setPatientFeatures({ ...patientFeatures, gender: v as any })}
+                    onChange={v => pf('gender', v as any)}
                     options={[{ value: 'male', label: 'Male' }, { value: 'female', label: 'Female' }, { value: 'other', label: 'Other' }]} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField id="height" label="Height (cm)" type="number" value={patientFeatures.height ?? 170}
-                    onChange={v => setPatientFeatures({ ...patientFeatures, height: parseInt(v) })} />
+                    onChange={v => pf('height', parseInt(v))} />
                   <FormField id="weight" label="Weight (kg)" type="number" value={patientFeatures.weight ?? 70}
-                    onChange={v => setPatientFeatures({ ...patientFeatures, weight: parseInt(v) })} />
+                    onChange={v => pf('weight', parseInt(v))} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField id="sleepHours" label="Sleep Hours" type="number" value={patientFeatures.sleepHours ?? 7}
-                    onChange={v => setPatientFeatures({ ...patientFeatures, sleepHours: parseInt(v) })} />
+                    onChange={v => pf('sleepHours', parseInt(v))} />
                   <FormField id="stressLevel" label="Stress (1–10)" type="number" value={patientFeatures.stressLevel ?? 5}
-                    onChange={v => setPatientFeatures({ ...patientFeatures, stressLevel: parseInt(v) })} />
+                    onChange={v => pf('stressLevel', parseInt(v))} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField id="digestion" label="Digestion" type="select" value={patientFeatures.digestion ?? 'good'}
-                    onChange={v => setPatientFeatures({ ...patientFeatures, digestion: v as any })}
+                    onChange={v => pf('digestion', v as any)}
                     options={[{ value: 'excellent', label: 'Excellent' }, { value: 'good', label: 'Good' }, { value: 'fair', label: 'Fair' }, { value: 'poor', label: 'Poor' }]} />
                   <FormField id="bodyType" label="Body Type" type="select" value={patientFeatures.bodyType ?? 'mesomorph'}
-                    onChange={v => setPatientFeatures({ ...patientFeatures, bodyType: v as any })}
+                    onChange={v => pf('bodyType', v as any)}
                     options={[{ value: 'ectomorph', label: 'Ectomorph' }, { value: 'mesomorph', label: 'Mesomorph' }, { value: 'endomorph', label: 'Endomorph' }]} />
                 </div>
               </>
             )}
 
             <FormField id="goal" label="Goal" type="text" value={goal}
-              onChange={setGoal} placeholder="e.g. Improve sleep" />
+              onChange={setGoal} placeholder="e.g. Improve sleep, balance digestion" />
             <FormField id="allergies" label="Allergies (comma-separated)" type="text" value={allergies}
               onChange={setAllergies} placeholder="e.g. dairy, coconut" />
 
@@ -115,10 +172,10 @@ export default function DietPlannerDemo() {
           </form>
         </div>
 
-        {/* Results panel */}
+        {/* ── Results panel ── */}
         <div className="rounded-2xl border border-gray-100 border-t-4 border-t-amber-500 bg-white p-7 shadow-card">
           <h2 className="font-serif text-xl font-bold text-gray-900 mb-1">ML Recommendations</h2>
-          <p className="text-xs text-gray-400 mb-5">Fill the form to see AI-powered recommendations</p>
+          <p className="text-xs text-gray-400 mb-5">Agni-aware diet plan with Samsarjana Krama guidance</p>
 
           {!plan && (
             <div className="flex flex-col items-center justify-center py-16 text-gray-300">
@@ -149,9 +206,19 @@ export default function DietPlannerDemo() {
                     </div>
                     <ConfidenceBar confidence={doshaPrediction.confidence}
                       color={doshaPrediction.primary === 'vata' ? 'blue' : doshaPrediction.primary === 'pitta' ? 'red' : 'green'} />
+                    <p className="text-xs text-gray-400 mt-2">
+                      Agni: <strong>{agni}</strong> · Koshta: <strong>{patientFeatures.koshta}</strong>
+                    </p>
                   </div>
                 )
               })()}
+
+              {/* Agni-specific guidance */}
+              {agni !== 'Samagni' && (
+                <div className={`rounded-xl border p-3 text-xs font-medium ${agniGuide.color}`}>
+                  <span className="font-bold">Agni Adjustment ({agni}): </span>{agniGuide.note}
+                </div>
+              )}
 
               {/* Recommended foods */}
               <div className="rounded-xl bg-green-50 border border-green-100 p-4">
@@ -179,7 +246,7 @@ export default function DietPlannerDemo() {
 
               {/* Meal timing */}
               <div className="rounded-xl bg-blue-50 border border-blue-100 p-4">
-                <h3 className="text-sm font-semibold text-blue-800 mb-1">Meal Timing</h3>
+                <h3 className="text-sm font-semibold text-blue-800 mb-1">Meal Timing & Samsarjana Krama</h3>
                 <p className="text-sm text-gray-700">{plan.timing}</p>
               </div>
 

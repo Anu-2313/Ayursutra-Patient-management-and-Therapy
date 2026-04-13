@@ -1,14 +1,31 @@
 import React from 'react'
-import { Outlet, Link, useLocation } from 'react-router-dom'
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import PWAInstallPrompt from './components/PWAInstallPrompt'
 import { useScrollNavbar } from './hooks/useScrollNavbar'
 import { useMobileDrawer } from './hooks/useMobileDrawer'
 import { cn } from './utils/cn'
+import { useApp } from './store/appStore.tsx'
 
-const navLinks = [
+const publicNavLinks = [
   { label: 'Features', href: '/#features', isRoute: false },
   { label: 'Benefits', href: '/#benefits', isRoute: false },
   { label: 'Services', href: '/#services', isRoute: false },
+]
+
+const appNavLinks = [
+  { label: 'Dashboard', href: '/dashboard', isRoute: true },
+  { label: 'Patients', href: '/records', isRoute: true },
+  { label: 'Appointments', href: '/appointments', isRoute: true },
+  { label: 'Schedule', href: '/schedule', isRoute: true },
+  { label: 'Cycle', href: '/cycle', isRoute: true },
+  { label: 'Inventory', href: '/inventory', isRoute: true },
+  { label: 'Analytics', href: '/analytics', isRoute: true },
+]
+
+const patientNavLinks = [
+  { label: 'My Dashboard', href: '/dashboard', isRoute: true },
+  { label: 'My Diet Plan', href: '/diet', isRoute: true },
+  { label: 'Appointments', href: '/appointments', isRoute: true },
 ]
 
 const footerColumns = [
@@ -70,9 +87,16 @@ export default function App() {
   const { isScrolled } = useScrollNavbar(20)
   const { isOpen, toggle, close } = useMobileDrawer()
   const location = useLocation()
+  const navigate = useNavigate()
+  const { state, logout } = useApp()
+  const { currentUser } = state
 
-  // Close drawer on route change
-  React.useEffect(() => { close() }, [location.pathname])
+  const isAppRoute = location.pathname !== '/' && location.pathname !== '/login'
+  const navLinks = isAppRoute
+    ? (currentUser?.role === 'patient' ? patientNavLinks : appNavLinks)
+    : publicNavLinks
+
+  React.useEffect(() => { close() }, [location.pathname, close])
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -80,30 +104,45 @@ export default function App() {
       {/* ── Navbar ───────────────────────────────────────────── */}
       <header className={cn(
         'sticky top-0 z-50 transition-all duration-300',
-        isScrolled
+        isScrolled || isAppRoute
           ? 'bg-white/90 backdrop-blur-lg shadow-sm border-b border-amber-100/60'
           : 'bg-transparent'
       )}>
         <div className="container-wide h-16 flex items-center justify-between">
-          <Link to="/" className="font-serif text-xl font-bold text-amber-800 tracking-tight">
+          <Link to={currentUser ? '/dashboard' : '/'} className="font-serif text-xl font-bold text-amber-800 tracking-tight">
             AyurSutra
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-7 text-sm">
+          <nav className="hidden md:flex items-center gap-4 text-sm">
             {navLinks.map(link => (
-              <a
-                key={link.label}
-                href={link.href}
-                className={cn(
-                  'font-medium transition-colors relative pb-0.5',
-                  isScrolled ? 'text-gray-600 hover:text-amber-800' : 'text-white/80 hover:text-white'
-                )}
-              >
-                {link.label}
-              </a>
+              link.isRoute ? (
+                <Link key={link.label} to={link.href}
+                  className={cn('font-medium transition-colors relative pb-0.5',
+                    location.pathname === link.href ? 'text-amber-600' :
+                    isScrolled || isAppRoute ? 'text-gray-600 hover:text-amber-800' : 'text-white/80 hover:text-white'
+                  )}>
+                  {link.label}
+                </Link>
+              ) : (
+                <a key={link.label} href={link.href}
+                  className={cn('font-medium transition-colors relative pb-0.5',
+                    isScrolled ? 'text-gray-600 hover:text-amber-800' : 'text-white/80 hover:text-white'
+                  )}>
+                  {link.label}
+                </a>
+              )
             ))}
-            <Link to="/login" className="btn-primary text-sm">Login</Link>
+            {currentUser ? (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500 hidden lg:block">{currentUser.name}</span>
+                <button onClick={() => { logout(); navigate('/') }} className="btn-outline-amber text-xs py-1.5 px-3">
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link to="/login" className="btn-primary text-sm">Login</Link>
+            )}
           </nav>
 
           {/* Mobile hamburger */}
@@ -111,7 +150,7 @@ export default function App() {
             onClick={toggle}
             className={cn(
               'md:hidden p-2 rounded-lg transition-colors',
-              isScrolled ? 'text-gray-700 hover:bg-amber-50' : 'text-white hover:bg-white/10'
+              isScrolled || isAppRoute ? 'text-gray-700 hover:bg-amber-50' : 'text-white hover:bg-white/10'
             )}
             aria-label={isOpen ? 'Close menu' : 'Open menu'}
           >
@@ -142,19 +181,26 @@ export default function App() {
         </div>
         <nav className="flex-1 px-6 py-6 space-y-1">
           {navLinks.map(link => (
-            <a
-              key={link.label}
-              href={link.href}
-              onClick={close}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-amber-50 hover:text-amber-800 font-medium transition-colors"
-            >
-              {link.label}
-            </a>
+            link.isRoute ? (
+              <Link key={link.label} to={link.href} onClick={close}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-amber-50 hover:text-amber-800 font-medium transition-colors">
+                {link.label}
+              </Link>
+            ) : (
+              <a key={link.label} href={link.href} onClick={close}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-amber-50 hover:text-amber-800 font-medium transition-colors">
+                {link.label}
+              </a>
+            )
           ))}
           <div className="pt-4">
-            <Link to="/login" onClick={close} className="btn-primary w-full justify-center">
-              Login
-            </Link>
+            {currentUser ? (
+              <button onClick={() => { logout(); navigate('/'); close() }} className="btn-outline-amber w-full justify-center">
+                Logout ({currentUser.name})
+              </button>
+            ) : (
+              <Link to="/login" onClick={close} className="btn-primary w-full justify-center">Login</Link>
+            )}
           </div>
         </nav>
       </div>

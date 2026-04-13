@@ -1,6 +1,11 @@
 import React from 'react'
-import { TherapyRecommender, DoshaClassifier, PatientFeatures, DoshaPrediction, TherapyRecommendation } from '../utils/mlModels'
+import {
+  TherapyRecommender, DoshaClassifier, ContraindicationEngine,
+  type PatientFeatures, type DoshaPrediction, type TherapyRecommendation,
+  type AgniState, type KoshtaType, type PrakritiType
+} from '../utils/mlModels'
 import FormField from '../components/FormField'
+import { useApp } from '../store/appStore.tsx'
 
 function ConfidenceBar({ confidence, color = 'amber' }: { confidence: number; color?: string }) {
   return (
@@ -25,13 +30,35 @@ const doshaStyle: Record<string, { bg: string; text: string; label: string }> = 
   kapha: { bg: 'bg-green-50', text: 'text-green-700', label: 'Kapha' },
 }
 
+const AGNI_OPTIONS = [
+  { value: 'Samagni', label: 'Samagni — Balanced' },
+  { value: 'Manda',   label: 'Manda — Slow/Weak' },
+  { value: 'Tikshna', label: 'Tikshna — Sharp/Intense' },
+  { value: 'Vishama', label: 'Vishama — Irregular' },
+]
+const KOSHTA_OPTIONS = [
+  { value: 'Madhya', label: 'Madhya — Moderate' },
+  { value: 'Krura',  label: 'Krura — Hard/Constipated' },
+  { value: 'Mrudu',  label: 'Mrudu — Sensitive/Loose' },
+]
+const PRAKRITI_OPTIONS = [
+  { value: 'Vata', label: 'Vata' }, { value: 'Pitta', label: 'Pitta' },
+  { value: 'Kapha', label: 'Kapha' }, { value: 'Vata-Pitta', label: 'Vata-Pitta' },
+  { value: 'Pitta-Kapha', label: 'Pitta-Kapha' }, { value: 'Vata-Kapha', label: 'Vata-Kapha' },
+  { value: 'Tridosha', label: 'Tridosha' },
+]
+
 export default function ScheduleDemo() {
+  const { state, addAppointment, checkConflict } = useApp()
+  const { therapists, rooms } = state
   const [patientName, setPatientName] = React.useState('')
   const [patientFeatures, setPatientFeatures] = React.useState<Partial<PatientFeatures>>({
     age: 30, gender: 'male', height: 170, weight: 70,
     sleepHours: 7, stressLevel: 5, digestion: 'good', appetite: 'moderate',
     bodyType: 'mesomorph', skinType: 'normal', hairType: 'normal',
-    energyLevel: 6, bowelMovement: 'regular', tongueCoating: 'none'
+    energyLevel: 6, bowelMovement: 'regular', tongueCoating: 'none',
+    prakriti: 'Vata', agni: 'Samagni', koshta: 'Madhya',
+    nadi: 'Vata-Nadi', sara: 'Madhyama', satva: 'Madhyama',
   })
   const [symptoms, setSymptoms] = React.useState('')
   const [date, setDate] = React.useState<string>(() => new Date().toISOString().slice(0, 10))
@@ -43,13 +70,23 @@ export default function ScheduleDemo() {
   const [scheduled, setScheduled] = React.useState<null | {
     id: string; patient: string; therapy: string; date: string; time: string; confidence: number
   }>(null)
+  const [conflictError, setConflictError] = React.useState('')
+  const [selectedTherapist, setSelectedTherapist] = React.useState('')
+  const [selectedRoom, setSelectedRoom] = React.useState('')
+
+  function pf<K extends keyof PatientFeatures>(key: K, value: PatientFeatures[K]) {
+    setPatientFeatures(prev => ({ ...prev, [key]: value }))
+  }
 
   function generateRecommendations() {
     const features = patientFeatures as PatientFeatures
     const doshaPred = DoshaClassifier.predict(features)
     setDoshaPrediction(doshaPred)
     const symptomList = symptoms.toLowerCase().split(',').map(s => s.trim()).filter(Boolean)
-    setRecommendations(TherapyRecommender.recommend(doshaPred, symptomList))
+    setRecommendations(TherapyRecommender.recommend(
+      doshaPred, symptomList,
+      features.agni, features.koshta, features.prakriti
+    ))
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -58,15 +95,46 @@ export default function ScheduleDemo() {
   }
 
   function bookSession(therapy: string, confidence: number) {
-    const id = Math.random().toString(36).slice(2, 8).toUpperCase()
+    setConflictError('')
+    if (!patientName.trim()) {
+      setConflictError('Please enter a patient name before booking.')
+      return
+    }
+    const therapist = therapists.find(t => t.id === selectedTherapist) || therapists.find(t => t.available)
+    const room = rooms.find(r => r.id === selectedRoom) || rooms.find(r => r.available)
+
+    if (!therapist || !room) {
+      setConflictError('No available therapist or room. Please check staff availability.')
+      return
+    }
+
+    const conflict = checkConflict(therapist.id, room.id, date, time)
+    if (conflict.hasConflict) {
+      setConflictError(conflict.reason)
+      return
+    }
+
+    const id = 'APT-' + Math.random().toString(36).slice(2, 6).toUpperCase()
+    addAppointment({
+      id, patientId: '', patientName: patientName, therapy, date, time,
+      therapistId: therapist.id, therapistName: therapist.name,
+      roomId: room.id, roomName: room.name,
+      status: 'scheduled', confidence,
+      agni, koshta, prakriti, notes,
+      createdAt: new Date().toISOString(),
+    })
     setScheduled({ id, patient: patientName, therapy, date, time, confidence })
   }
+
+  const agni = (patientFeatures.agni || 'Samagni') as AgniState
+  const koshta = (patientFeatures.koshta || 'Madhya') as KoshtaType
+  const prakriti = (patientFeatures.prakriti || 'Vata') as PrakritiType
 
   return (
     <div className="min-h-[70vh] flex items-start bg-[#fafaf8]">
       <div className="container-wide py-10 grid gap-8 md:grid-cols-2">
 
-        {/* Form panel */}
+        {/* ── Form panel ── */}
         <div className="rounded-2xl border border-gray-100 border-t-4 border-t-amber-500 bg-white p-7 shadow-card">
           <div className="flex items-center justify-between mb-1">
             <h1 className="font-serif text-xl font-bold text-gray-900">ML-powered Therapy Scheduler</h1>
@@ -81,27 +149,70 @@ export default function ScheduleDemo() {
             <FormField id="patient" label="Patient name" type="text" value={patientName}
               onChange={setPatientName} placeholder="e.g. S. Sharma" required />
 
+            {/* ── Ayurvedic Diagnostic Parameters (always visible) ── */}
+            <div className="rounded-xl bg-amber-50 border border-amber-100 p-4 space-y-3">
+              <p className="text-xs font-semibold text-amber-800 uppercase tracking-wider">Ayurvedic Diagnostic Parameters</p>
+              <div className="grid grid-cols-3 gap-3">
+                <FormField id="prakriti" label="Prakriti" type="select"
+                  value={patientFeatures.prakriti || 'Vata'}
+                  onChange={v => pf('prakriti', v as PrakritiType)}
+                  options={PRAKRITI_OPTIONS} />
+                <FormField id="agni" label="Agni" type="select"
+                  value={patientFeatures.agni || 'Samagni'}
+                  onChange={v => pf('agni', v as AgniState)}
+                  options={AGNI_OPTIONS} />
+                <FormField id="koshta" label="Koshta" type="select"
+                  value={patientFeatures.koshta || 'Madhya'}
+                  onChange={v => pf('koshta', v as KoshtaType)}
+                  options={KOSHTA_OPTIONS} />
+              </div>
+
+              {/* Live safety indicators */}
+              <div className="flex flex-wrap gap-2 pt-1">
+                {koshta === 'Mrudu' && (
+                  <span className="text-xs bg-red-100 text-red-700 border border-red-200 rounded-full px-2.5 py-0.5 font-semibold">
+                    🚨 Mrudu Koshta — Virechana contraindicated
+                  </span>
+                )}
+                {agni === 'Manda' && (
+                  <span className="text-xs bg-red-100 text-red-700 border border-red-200 rounded-full px-2.5 py-0.5 font-semibold">
+                    🚨 Manda Agni — Avoid heavy ghee doses
+                  </span>
+                )}
+                {(prakriti === 'Pitta' || prakriti === 'Vata-Pitta') && (
+                  <span className="text-xs bg-amber-100 text-amber-700 border border-amber-200 rounded-full px-2.5 py-0.5 font-semibold">
+                    ⚠️ Pitta Prakriti — Limit Swedana temperature
+                  </span>
+                )}
+                {koshta !== 'Mrudu' && agni !== 'Manda' && prakriti !== 'Pitta' && prakriti !== 'Vata-Pitta' && (
+                  <span className="text-xs bg-green-100 text-green-700 border border-green-200 rounded-full px-2.5 py-0.5 font-semibold">
+                    ✓ No active contraindication flags
+                  </span>
+                )}
+              </div>
+            </div>
+
             {showAdvanced && (
               <>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField id="age" label="Age" type="number" value={patientFeatures.age ?? 30}
-                    onChange={v => setPatientFeatures({ ...patientFeatures, age: parseInt(v) })} />
+                    onChange={v => pf('age', parseInt(v))} />
                   <FormField id="gender" label="Gender" type="select" value={patientFeatures.gender ?? 'male'}
-                    onChange={v => setPatientFeatures({ ...patientFeatures, gender: v as any })}
+                    onChange={v => pf('gender', v as any)}
                     options={[{ value: 'male', label: 'Male' }, { value: 'female', label: 'Female' }, { value: 'other', label: 'Other' }]} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField id="sleepHours" label="Sleep Hours" type="number" value={patientFeatures.sleepHours ?? 7}
-                    onChange={v => setPatientFeatures({ ...patientFeatures, sleepHours: parseInt(v) })} />
+                    onChange={v => pf('sleepHours', parseInt(v))} />
                   <FormField id="stressLevel" label="Stress (1–10)" type="number" value={patientFeatures.stressLevel ?? 5}
-                    onChange={v => setPatientFeatures({ ...patientFeatures, stressLevel: parseInt(v) })} />
+                    onChange={v => pf('stressLevel', parseInt(v))} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField id="digestion" label="Digestion" type="select" value={patientFeatures.digestion ?? 'good'}
-                    onChange={v => setPatientFeatures({ ...patientFeatures, digestion: v as any })}
+                    onChange={v => pf('digestion', v as any)}
                     options={[{ value: 'excellent', label: 'Excellent' }, { value: 'good', label: 'Good' }, { value: 'fair', label: 'Fair' }, { value: 'poor', label: 'Poor' }]} />
                   <FormField id="bodyType" label="Body Type" type="select" value={patientFeatures.bodyType ?? 'mesomorph'}
-                    onChange={v => setPatientFeatures({ ...patientFeatures, bodyType: v as any })}
+                    onChange={v => pf('bodyType', v as any)}
                     options={[{ value: 'ectomorph', label: 'Ectomorph' }, { value: 'mesomorph', label: 'Mesomorph' }, { value: 'endomorph', label: 'Endomorph' }]} />
                 </div>
               </>
@@ -116,7 +227,37 @@ export default function ScheduleDemo() {
             </div>
 
             <FormField id="notes" label="Notes (optional)" type="textarea" value={notes}
-              onChange={setNotes} placeholder="Allergies, preferences, or physician instructions" rows={3} />
+              onChange={setNotes} placeholder="Allergies, preferences, or physician instructions" rows={2} />
+
+            {/* Therapist & Room selection */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-1.5">Therapist</label>
+                <select value={selectedTherapist} onChange={e => setSelectedTherapist(e.target.value)}
+                  className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500">
+                  <option value="">Auto-assign</option>
+                  {therapists.filter(t => t.available).map(t => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-1.5">Room</label>
+                <select value={selectedRoom} onChange={e => setSelectedRoom(e.target.value)}
+                  className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500">
+                  <option value="">Auto-assign</option>
+                  {rooms.filter(r => r.available).map(r => (
+                    <option key={r.id} value={r.id}>{r.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {conflictError && (
+              <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-xs text-red-700 font-medium">
+                🚨 {conflictError}
+              </div>
+            )}
 
             <button type="submit" className="btn-primary w-full justify-center">
               Get ML Recommendations
@@ -124,10 +265,10 @@ export default function ScheduleDemo() {
           </form>
         </div>
 
-        {/* Results panel */}
+        {/* ── Results panel ── */}
         <div className="rounded-2xl border border-gray-100 border-t-4 border-t-amber-500 bg-white p-7 shadow-card">
           <h2 className="font-serif text-xl font-bold text-gray-900 mb-1">AI Therapy Recommendations</h2>
-          <p className="text-xs text-gray-400 mb-5">Fill the form to see personalized recommendations</p>
+          <p className="text-xs text-gray-400 mb-5">Includes contraindication alerts based on Agni, Koshta & Prakriti</p>
 
           {recommendations.length === 0 && !scheduled && (
             <div className="flex flex-col items-center justify-center py-16 text-gray-300">
@@ -156,8 +297,11 @@ export default function ScheduleDemo() {
                       <span>Pitta <strong>{Math.round(doshaPrediction.pitta * 100)}%</strong></span>
                       <span>Kapha <strong>{Math.round(doshaPrediction.kapha * 100)}%</strong></span>
                     </div>
-                    <ConfidenceBar confidence={doshaPrediction.confidence} color={doshaPrediction.primary === 'vata' ? 'blue' : doshaPrediction.primary === 'pitta' ? 'red' : 'green'} />
-                    <p className="text-xs text-gray-400 mt-2">Model accuracy: {Math.round(DoshaClassifier.getAccuracy() * 100)}%</p>
+                    <ConfidenceBar confidence={doshaPrediction.confidence}
+                      color={doshaPrediction.primary === 'vata' ? 'blue' : doshaPrediction.primary === 'pitta' ? 'red' : 'green'} />
+                    <p className="text-xs text-gray-400 mt-2">
+                      Prakriti: <strong>{prakriti}</strong> · Agni: <strong>{agni}</strong> · Koshta: <strong>{koshta}</strong>
+                    </p>
                   </div>
                 )
               })()}
@@ -175,6 +319,26 @@ export default function ScheduleDemo() {
                       </div>
                     </div>
                     <ConfidenceBar confidence={rec.confidence} />
+
+                    {/* Contraindication alerts */}
+                    {rec.contraindications && rec.contraindications.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        {rec.contraindications.map((alert, ai) => (
+                          <div key={ai} className={`rounded-lg border p-2.5 text-xs ${
+                            alert.severity === 'critical' ? 'bg-red-50 border-red-200 text-red-800' :
+                            alert.severity === 'warning'  ? 'bg-amber-50 border-amber-200 text-amber-800' :
+                            'bg-blue-50 border-blue-200 text-blue-800'
+                          }`}>
+                            <span className="font-bold">
+                              {alert.severity === 'critical' ? '🚨 CRITICAL: ' : alert.severity === 'warning' ? '⚠️ WARNING: ' : 'ℹ️ INFO: '}
+                            </span>
+                            {alert.reason}
+                            <p className="mt-1 font-medium text-gray-700">→ {alert.recommendation}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
                     <button onClick={() => bookSession(rec.therapy, rec.confidence)}
                       className="btn-forest mt-3 text-xs">
                       Book This Therapy
@@ -218,8 +382,9 @@ export default function ScheduleDemo() {
                 <div className="flex justify-between"><span className="text-gray-500">Date</span><span>{scheduled.date}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">Time</span><span>{scheduled.time}</span></div>
                 <div className="flex justify-between"><span className="text-gray-500">ML Confidence</span><span className="font-semibold text-green-700">{Math.round(scheduled.confidence * 100)}%</span></div>
-                {notes && <div className="flex justify-between"><span className="text-gray-500">Notes</span><span className="text-right max-w-[60%]">{notes}</span></div>}
-              </div>
+                <div className="flex justify-between"><span className="text-gray-500">Agni</span><span>{agni}</span></div>
+                <div className="flex justify-between"><span className="text-gray-500">Koshta</span><span>{koshta}</span></div>
+                {notes && <div className="flex justify-between"><span className="text-gray-500">Notes</span><span className="text-right max-w-[60%]">{notes}</span></div>}              </div>
               <div className="mt-4 flex gap-2">
                 <button className="btn-outline-amber text-xs">Reschedule</button>
                 <button className="btn-forest text-xs">Notify Patient</button>

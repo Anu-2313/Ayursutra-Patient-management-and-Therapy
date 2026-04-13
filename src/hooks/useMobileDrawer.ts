@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 export function useMobileDrawer() {
   const [isOpen, setIsOpen] = useState(false)
@@ -6,19 +6,11 @@ export function useMobileDrawer() {
   // Lock/unlock body scroll when drawer opens/closes
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : ''
-    return () => {
-      // Always restore on unmount
-      document.body.style.overflow = ''
-    }
+    return () => { document.body.style.overflow = '' }
   }, [isOpen])
 
-  function toggle() {
-    setIsOpen(prev => !prev)
-  }
-
-  function close() {
-    setIsOpen(false)
-  }
+  const toggle = useCallback(() => setIsOpen(prev => !prev), [])
+  const close = useCallback(() => setIsOpen(false), [])
 
   return { isOpen, toggle, close }
 }
