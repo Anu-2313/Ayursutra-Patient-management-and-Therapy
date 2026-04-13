@@ -20,8 +20,9 @@ body {
 
 /* ── Buttons ─────────────────────────────────────────────── */
 .btn-primary {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   border-radius: 0.5rem;
   background: linear-gradient(135deg, #8b5e2a 0%, #c4862e 100%);
   padding: 0.65rem 1.4rem;

@@ -114,7 +114,7 @@ export default function App() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-4 text-sm">
+          <nav className="hidden md:flex items-center gap-4 text-sm flex-1 justify-center">
             {navLinks.map(link => (
               link.isRoute ? (
                 <Link key={link.label} to={link.href}

@@ -118,7 +118,7 @@ export default function Login() {
               <div className="rounded-xl bg-red-50 border border-red-200 p-3 text-xs text-red-700">{error}</div>
             )}
 
-            <button type="submit" disabled={loading} className="btn-primary w-full justify-center mt-2 disabled:opacity-60">
+            <button type="submit" disabled={loading} className="btn-primary w-full justify-center text-center mt-2 disabled:opacity-60">
               {loading ? 'Signing in...' : 'Sign in →'}
             </button>
           </form>
