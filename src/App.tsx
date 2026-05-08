@@ -106,7 +106,7 @@ export default function App() {
         'sticky top-0 z-50 transition-all duration-300',
         isScrolled || isAppRoute
           ? 'bg-white/90 backdrop-blur-lg shadow-sm border-b border-amber-100/60'
-          : 'bg-transparent'
+          : 'bg-white/90 backdrop-blur-lg shadow-sm border-b border-amber-100/60'
       )}>
         <div className="container-wide h-16 flex items-center justify-between">
           <Link to={currentUser ? '/dashboard' : '/'} className="font-serif text-xl font-bold text-amber-800 tracking-tight">
@@ -119,39 +119,37 @@ export default function App() {
               link.isRoute ? (
                 <Link key={link.label} to={link.href}
                   className={cn('font-medium transition-colors relative pb-0.5',
-                    location.pathname === link.href ? 'text-amber-600' :
-                    isScrolled || isAppRoute ? 'text-gray-600 hover:text-amber-800' : 'text-white/80 hover:text-white'
+                    location.pathname === link.href ? 'text-amber-600' : 'text-gray-600 hover:text-amber-800'
                   )}>
                   {link.label}
                 </Link>
               ) : (
                 <a key={link.label} href={link.href}
-                  className={cn('font-medium transition-colors relative pb-0.5',
-                    isScrolled ? 'text-gray-600 hover:text-amber-800' : 'text-white/80 hover:text-white'
-                  )}>
+                  className="font-medium transition-colors relative pb-0.5 text-gray-600 hover:text-amber-800">
                   {link.label}
                 </a>
               )
             ))}
+          </nav>
+
+          {/* Desktop auth — right side */}
+          <div className="hidden md:flex items-center gap-2">
             {currentUser ? (
-              <div className="flex items-center gap-2">
+              <>
                 <span className="text-xs text-gray-500 hidden lg:block">{currentUser.name}</span>
                 <button onClick={() => { logout(); navigate('/') }} className="btn-outline-amber text-xs py-1.5 px-3">
                   Logout
                 </button>
-              </div>
+              </>
             ) : (
               <Link to="/login" className="btn-primary text-sm">Login</Link>
             )}
-          </nav>
+          </div>
 
           {/* Mobile hamburger */}
           <button
             onClick={toggle}
-            className={cn(
-              'md:hidden p-2 rounded-lg transition-colors',
-              isScrolled || isAppRoute ? 'text-gray-700 hover:bg-amber-50' : 'text-white hover:bg-white/10'
-            )}
+            className="md:hidden p-2 rounded-lg transition-colors text-gray-700 hover:bg-amber-50"
             aria-label={isOpen ? 'Close menu' : 'Open menu'}
           >
             {isOpen ? <XIcon /> : <MenuIcon />}
