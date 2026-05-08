@@ -1,5 +1,5 @@
 import React from 'react'
-import { useApp } from '../store/appStore.tsx'
+import { useApp } from '../store/appStore'
 
 function MetricCard({ label, value, sub, delta, color }: { label: string; value: string; sub?: string; delta?: string; color: string }) {
   return (

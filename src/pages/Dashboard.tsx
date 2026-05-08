@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { useApp } from '../store/appStore.tsx'
+import { useApp } from '../store/appStore'
 import PatientPortal from './PatientPortal'
 // ── Shared helpers ────────────────────────────────────────────────────────────
 

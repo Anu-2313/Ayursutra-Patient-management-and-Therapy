@@ -4,7 +4,7 @@ import PWAInstallPrompt from './components/PWAInstallPrompt'
 import { useScrollNavbar } from './hooks/useScrollNavbar'
 import { useMobileDrawer } from './hooks/useMobileDrawer'
 import { cn } from './utils/cn'
-import { useApp } from './store/appStore.tsx'
+import { useApp } from './store/appStore'
 
 const publicNavLinks = [
   { label: 'Features', href: '/#features', isRoute: false },

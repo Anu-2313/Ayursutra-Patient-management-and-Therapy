@@ -5,7 +5,7 @@ import {
   type AgniState, type KoshtaType, type PrakritiType
 } from '../utils/mlModels'
 import FormField from '../components/FormField'
-import { useApp } from '../store/appStore.tsx'
+import { useApp } from '../store/appStore'
 
 function ConfidenceBar({ confidence, color = 'amber' }: { confidence: number; color?: string }) {
   return (

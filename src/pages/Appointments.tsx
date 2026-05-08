@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { useApp } from '../store/appStore.tsx'
+import { useApp } from '../store/appStore'
 
 const statusColors: Record<string, string> = {
   'scheduled':   'bg-blue-100 text-blue-700 border-blue-200',

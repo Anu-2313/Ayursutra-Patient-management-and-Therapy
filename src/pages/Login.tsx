@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import FormField from '../components/FormField'
-import { useApp } from '../store/appStore.tsx'
+import { useApp } from '../store/appStore'
 
 // Demo credentials — role-based access
 const DEMO_USERS = [

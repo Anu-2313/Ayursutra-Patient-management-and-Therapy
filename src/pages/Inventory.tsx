@@ -1,5 +1,5 @@
 import React from 'react'
-import { useApp } from '../store/appStore.tsx'
+import { useApp } from '../store/appStore'
 
 export default function Inventory() {
   const { state, updateInventory } = useApp()

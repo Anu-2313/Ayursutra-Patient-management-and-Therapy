@@ -1,7 +1,7 @@
 import React from 'react'
 import FormField from '../components/FormField'
 import type { AgniState, KoshtaType, PrakritiType } from '../utils/mlModels'
-import { useApp } from '../store/appStore.tsx'
+import { useApp } from '../store/appStore'
 
 type RecordItem = {
   id: string

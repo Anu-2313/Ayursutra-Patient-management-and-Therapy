@@ -2,7 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import FormField from '../components/FormField'
 import type { PatientFeatures, AgniState, KoshtaType, PrakritiType, NadiType, SaraType, SatvaType } from '../utils/mlModels'
-import { useApp } from '../store/appStore.tsx'
+import { useApp } from '../store/appStore'
 
 // ── Structured Input Method (SIM) — classical Ayurvedic taxonomy ──────────────
 const PRAKRITI_OPTIONS = [
